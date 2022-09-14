@@ -152,6 +152,23 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
 
 // MiniTFT End
 
+// Motor Shield START
+
+#include <Adafruit_MotorShield.h>
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+Adafruit_DCMotor *myMotor = AFMS.getMotor(3);
+
+// Motor Shield END
+
+// ESP32Servo Start
+
+#include <ESP32Servo.h>
+Servo myservo;  // create servo object to control a servo
+int servoPin = 12;
+boolean blindsOpen = false;
+
+// ESP32Servo End
+
 boolean LEDOn = false; // State of Built-in LED true=on, false=off.
 #define LOOPDELAY 100
 
@@ -184,6 +201,16 @@ void setup() {
   tft.setRotation(1);
   tft.fillScreen(ST77XX_BLACK);
 
+  AFMS.begin(); // Motor Shield Start
+
+  // ESP32Servo Start
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  myservo.setPeriodHertz(50);    // standard 50 hz servo
+  myservo.attach(servoPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
+  // ESP32Servo End
 
   Serial.println("ADT7410 demo");
 
@@ -253,6 +280,7 @@ void loop() {
 
   builtinLED();
   updateTemperature();
+  automaticFan(20.0);
   delay(LOOPDELAY); // To allow time to publish new code.
 }
 
@@ -306,4 +334,16 @@ void updateTemperature() {
   String tempInC = String(c);
   tftDrawText(tempInC, ST77XX_WHITE);
   delay(100);
+}
+
+void automaticFan(float temperatureThreshold) {
+  float c = tempsensor.readTempC();
+  myMotor->setSpeed(100);
+  if (c < temperatureThreshold) {
+    myMotor->run(RELEASE);
+    Serial.println("stop");
+  } else {
+    myMotor->run(FORWARD);
+    Serial.println("forward");
+  }
 }

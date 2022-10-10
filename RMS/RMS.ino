@@ -160,6 +160,9 @@ Adafruit_DCMotor *myMotor = AFMS.getMotor(3);
 
 // Motor Shield END
 
+bool fanEnabled = false;            // If the fan is on or off.
+bool automaticFanControl = true;    // Automatic or manual control
+
 // ESP32Servo Start
 
 #include <ESP32Servo.h>
@@ -280,7 +283,7 @@ void loop() {
 
   builtinLED();
   updateTemperature();
-  automaticFan(20.0);
+  fanControl();
   delay(LOOPDELAY); // To allow time to publish new code.
 }
 
@@ -340,10 +343,20 @@ void automaticFan(float temperatureThreshold) {
   float c = tempsensor.readTempC();
   myMotor->setSpeed(100);
   if (c < temperatureThreshold) {
-    myMotor->run(RELEASE);
-    Serial.println("stop");
+   fanEnabled = false;
   } else {
-    myMotor->run(FORWARD);
-    Serial.println("forward");
+    fanEnabled = true;
   }
+  }
+
+  void fanControl() {
+  if (automaticFanControl) {
+    automaticFan(25.0);
+  }
+  if (fanEnabled) {
+    myMotor->run(FORWARD);
+  } else {
+    myMotor->run(RELEASE);
+  }
+}
 }

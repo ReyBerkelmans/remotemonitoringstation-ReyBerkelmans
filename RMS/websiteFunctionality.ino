@@ -82,6 +82,10 @@ String processor(const String& var) {
     return datetime;
   }
 
+  if (var == "TEMPERATURE") {
+  return String(tempsensor.readTempC());
+}
+
   // Default "catch" which will return nothing in case the HTML has no variable to replace.
   return String();
 }

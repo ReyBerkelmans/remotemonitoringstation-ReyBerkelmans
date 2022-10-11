@@ -343,13 +343,13 @@ void automaticFan(float temperatureThreshold) {
   float c = tempsensor.readTempC();
   myMotor->setSpeed(100);
   if (c < temperatureThreshold) {
-   fanEnabled = false;
+    fanEnabled = false;
   } else {
     fanEnabled = true;
   }
-  }
+}
 
-  void fanControl() {
+void fanControl() {
   if (automaticFanControl) {
     automaticFan(25.0);
   }
@@ -358,5 +358,4 @@ void automaticFan(float temperatureThreshold) {
   } else {
     myMotor->run(RELEASE);
   }
-}
 }

@@ -201,7 +201,7 @@ void setup() {
   // Use this initializer (uncomment) if you're using a 0.96" 180x60 TFT
   tft.initR(INITR_MINI160x80);   // initialize a ST7735S chip, mini display
 
-  tft.setRotation(1);
+  tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
 
   AFMS.begin(); // Motor Shield Start
@@ -239,6 +239,13 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
+  // Display IP on TFT
+  tft.setCursor(0, 60);
+  tft.setTextSize(2);
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+  tft.setTextWrap(true);
+  tft.print(WiFi.localIP());
+
   routesConfiguration(); // Reads routes from routesManagement
 
   server.begin();
@@ -270,7 +277,7 @@ void setup() {
   // Use this initializer (uncomment) if you're using a 0.96" 180x60 TFT
   tft.initR(INITR_MINI160x80);   // initialize a ST7735S chip, mini display
 
-  tft.setRotation(1);
+  tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
 
   // MiniTFT End
@@ -323,7 +330,7 @@ void logEvent(String dataToLog) {
 void tftDrawText(String text, uint16_t color) {
   tft.setCursor(0, 0);
   tft.setTextSize(3);
-  tft.setTextColor(color);
+  tft.setTextColor(color, ST77XX_BLACK);
   tft.setTextWrap(true);
   tft.print(text);
 }

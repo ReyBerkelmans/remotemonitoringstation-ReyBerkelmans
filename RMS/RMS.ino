@@ -233,6 +233,7 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi..");
+    tftDrawText("Connecting to WiFi..", ST77XX_RED);
   }
   Serial.println();
   Serial.print("Connected to the Internet");

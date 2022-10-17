@@ -235,6 +235,7 @@ void setup() {
     Serial.println("Connecting to WiFi..");
     tftDrawText("Connecting to WiFi..", ST77XX_RED);
   }
+  tft.fillScreen(ST77XX_BLACK);
   Serial.println();
   Serial.print("Connected to the Internet");
   Serial.print("IP address: ");
@@ -272,16 +273,6 @@ void setup() {
   }
   else logEvent("seesaw started");
 
-  ss.tftReset();
-  ss.setBacklight(0x0); //set the backlight fully on
-
-  // Use this initializer (uncomment) if you're using a 0.96" 180x60 TFT
-  tft.initR(INITR_MINI160x80);   // initialize a ST7735S chip, mini display
-
-  tft.setRotation(3);
-  tft.fillScreen(ST77XX_BLACK);
-
-  // MiniTFT End
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -292,6 +283,7 @@ void loop() {
   builtinLED();
   updateTemperature();
   fanControl();
+  windowBlinds();
   delay(LOOPDELAY); // To allow time to publish new code.
 }
 
@@ -340,8 +332,8 @@ void updateTemperature() {
   // Read and print out the temperature, then convert to *F
   float c = tempsensor.readTempC();
   float f = c * 9.0 / 5.0 + 32;
-  Serial.print("Temp: "); Serial.print(c); Serial.print("*C\t");
-  Serial.print(f); Serial.println("*F");
+//  Serial.print("Temp: "); Serial.print(c); Serial.print("*C\t");
+//  Serial.print(f); Serial.println("*F");
   String tempInC = String(c);
   tftDrawText(tempInC, ST77XX_WHITE);
   delay(100);
@@ -365,5 +357,19 @@ void fanControl() {
     myMotor->run(FORWARD);
   } else {
     myMotor->run(RELEASE);
+  }
+}
+
+void windowBlinds() {
+  uint32_t buttons = ss.readButtons();
+  if (! (buttons & TFTWING_BUTTON_A)) {
+    Serial.println("Button Pressed");
+    if (blindsOpen) {
+     myservo.write(0);
+    } else {
+     myservo.write(180);
+
+    }
+    blindsOpen = !blindsOpen;
   }
 }

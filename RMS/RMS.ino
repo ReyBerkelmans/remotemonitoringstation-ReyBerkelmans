@@ -175,8 +175,31 @@ boolean blindsOpen = false;
 boolean LEDOn = false; // State of Built-in LED true=on, false=off.
 #define LOOPDELAY 100
 
+#define LEDRed 27
+#define LEDGreen 33
+// RFID Start
+
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define SS_PIN  21  // ES32 Feather
+#define RST_PIN 17 // esp32 Feather - SCL pin. Could be others.
+
+MFRC522 rfid(SS_PIN, RST_PIN);
+bool safeLocked = true;
+
+// RFID End
+
 
 void setup() {
+  // RFID Start
+SPI.begin(); // init SPI bus
+rfid.PCD_Init(); // init MFRC522
+// RFID End
+pinMode(LEDRed, OUTPUT);
+pinMode(LEDGreen, OUTPUT);
+digitalWrite(LEDRed, LOW);
+digitalWrite(LEDGreen, LOW);
   Serial.begin(9600);
   while (!Serial) {
     delay(10);
@@ -284,6 +307,8 @@ void loop() {
   updateTemperature();
   fanControl();
   windowBlinds();
+  readRFID();
+  safeStatusDisplay();
   delay(LOOPDELAY); // To allow time to publish new code.
 }
 
@@ -371,5 +396,48 @@ void windowBlinds() {
 
     }
     blindsOpen = !blindsOpen;
+  }
+}
+
+void readRFID() {
+
+  String uidOfCardRead = "";
+  String validCardUID = "172 85 96 73";
+
+  if (rfid.PICC_IsNewCardPresent()) { // new tag is available
+    if (rfid.PICC_ReadCardSerial()) { // NUID has been readed
+      MFRC522::PICC_Type piccType = rfid.PICC_GetType(rfid.uid.sak);
+      for (int i = 0; i < rfid.uid.size; i++) {
+        uidOfCardRead += rfid.uid.uidByte[i] < 0x10 ? " 0" : " ";
+        uidOfCardRead += rfid.uid.uidByte[i];
+      }
+      Serial.println(uidOfCardRead);
+
+      rfid.PICC_HaltA(); // halt PICC
+      rfid.PCD_StopCrypto1(); // stop encryption on PCD
+      uidOfCardRead.trim();
+      if (uidOfCardRead == validCardUID) {
+        safeLocked = false;
+        logEvent("Safe Unlocked");
+      } else {
+        safeLocked = true;
+        logEvent("Safe Locked");
+      }
+    }
+  }
+}
+
+void safeStatusDisplay() {
+  /*
+     Outputs the status of the Safe Lock to the LEDS
+     Red LED = Locked
+     Green LED = Unlocked.
+  */
+  if (safeLocked) {
+    digitalWrite(LEDRed, HIGH);
+    digitalWrite(LEDGreen, LOW);
+  } else {
+    digitalWrite(LEDRed, LOW);
+    digitalWrite(LEDGreen, HIGH);
   }
 }

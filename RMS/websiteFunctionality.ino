@@ -41,6 +41,14 @@ void routesConfiguration() {
     request->send(SPIFFS, "/dashboard.html", "text/html", false, processor);
   });
 
+server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
+    if (!request->authenticate(usernameAdmin, passwordAdmin)){
+      logEvent("Administrator Access Attempt failed");
+      return request->requestAuthentication();
+    }
+    logEvent("Admin access");
+    request->send(SPIFFS, "/admin.html", "text/html", false, processor);
+  });
 
   // Example of route with authentication, and use of processor
   // Also demonstrates how to have arduino functionality included (turn LED on)
@@ -130,12 +138,3 @@ String processor(const String& var) {
   // Default "catch" which will return nothing in case the HTML has no variable to replace.
   return String();
 }
-
-server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameAdmin, passwordAdmin)){
-      logEvent("Administrator Access Attempt failed");
-      return request->requestAuthentication();
-    }
-    logEvent("Admin access");
-    request->send(SPIFFS, "/admin.html", "text/html", false, processor);
-  });

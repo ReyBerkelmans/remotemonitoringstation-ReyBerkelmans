@@ -11,8 +11,8 @@
 <nav>
     <ul>
         <li><a href="index.html">Home</a></li>
-        <li class="active"><a href="/dashboard.html">Dashboard</a></li>
-        <li><a href="admin.html">Admin</a></li>
+        <li><a href="dashboard.html.html">Home</a></li>
+        <li class="active"><a href="/admin.html">Admin</a></li>
     </ul>
 </nav>
 
@@ -30,12 +30,15 @@
             <p><a href="/FanControl">Fan Automatic/Manual</a></p>
         </div>
         <div>
-            <p><a href="/SafeLock">Lock Safe</a></p>
-<p><a href="/SafeUnlock">Unlock Safe</a></p>
-        </div>
-        <div>
             <p>Temperature</p>
             <p>%TEMPERATURE%</p>
+        </div>
+        <div>
+            <div>
+                <p>%SAFESTATUS%</p>
+                <p><a href="/SafeLockAdmin">Lock Safe</a></p>
+                <p><a href="/SafeUnlockAdmin">Unlock Safe</a></p>
+              </div>
         </div>
     <div>LogEvents<p><a href="/logOutput">Download</a></div>
     <div>

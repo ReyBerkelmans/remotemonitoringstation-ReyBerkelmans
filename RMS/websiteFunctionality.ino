@@ -53,7 +53,7 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
   // Example of route with authentication, and use of processor
   // Also demonstrates how to have arduino functionality included (turn LED on)
   server.on("/LEDOn", HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     LEDOn = true;
     request->send(SPIFFS, "/dashboard.html", "text/html", false, processor);
@@ -61,7 +61,7 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
 
 
   server.on("/LEDOff", HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     LEDOn = false;
     request->send(SPIFFS, "/dashboard.html", "text/html", false, processor);
@@ -70,14 +70,14 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
 
   // Example of route which sets file to download - 'true' in send() command.
   server.on("/logOutput", HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     logEvent("Log Event Download");
     request->send(SPIFFS, "/logEvents.csv", "text/html", true);
   });
 
   server.on("/FanManualOn",  HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     fanEnabled = true;
     logEvent("Fan Manual Control: On");
@@ -86,7 +86,7 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
 
 
   server.on("/FanManualOff",  HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     fanEnabled = false;
     logEvent("Fan Manual Control: Off");
@@ -94,14 +94,14 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
   });
 
   server.on("/FanControl",  HTTP_GET, [](AsyncWebServerRequest * request) {
-    if (!request->authenticate(usernameGuest, passwordGuest))
+    if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
       return request->requestAuthentication();
     automaticFanControl = !automaticFanControl;
     logEvent("Fan Manual Control: On");
     request->send(SPIFFS, "/dashboard.html", "text/html", false, processor);
   });
   server.on("/SafeLock",  HTTP_GET, [](AsyncWebServerRequest * request) {
-  if (!request->authenticate(usernameGuest, passwordGuest))
+  if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
     return request->requestAuthentication();
   logEvent("Safe Locked via Website");
   safeLocked = true;
@@ -109,7 +109,7 @@ server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest * request) {
 });
 
 server.on("/SafeUnlock",  HTTP_GET, [](AsyncWebServerRequest * request) {
-  if (!request->authenticate(usernameGuest, passwordGuest))
+  if (!request->authenticate(usernameGuest, passwordGuest)&&!request->authenticate(usernameAdmin, passwordAdmin))
     return request->requestAuthentication();
     safeLocked = false;
   logEvent("Safe Unlocked via Website");
@@ -117,7 +117,7 @@ server.on("/SafeUnlock",  HTTP_GET, [](AsyncWebServerRequest * request) {
 });
 
 server.on("/SafeLockAdmin",  HTTP_GET, [](AsyncWebServerRequest * request) {
-  if (!request->authenticate(usernameAdmin, passwordAdmin))
+  if (!request->authenticate(usernameAdmin, passwordAdmin)&&!request->authenticate(usernameAdmin, passwordAdmin))
     return request->requestAuthentication();
   logEvent("Safe Locked via Website");
   safeLocked = true;
@@ -125,7 +125,7 @@ server.on("/SafeLockAdmin",  HTTP_GET, [](AsyncWebServerRequest * request) {
 });
 
 server.on("/SafeUnlockAdmin",  HTTP_GET, [](AsyncWebServerRequest * request) {
-  if (!request->authenticate(usernameAdmin, passwordAdmin))
+  if (!request->authenticate(usernameAdmin, passwordAdmin)&&!request->authenticate(usernameAdmin, passwordAdmin))
     return request->requestAuthentication();
     safeLocked = false;
   logEvent("Safe Unlocked via Website");
